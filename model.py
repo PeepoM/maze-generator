@@ -12,11 +12,19 @@ class Model:
         self.carve_maze()
 
         # Determine the path from the top left corner to the bottom right one
-        self.path = self.determine_path_to_end()
+        self._path = self.determine_path_to_end()
 
     @property
     def edge_length(self):
         return Cell.EDGE_LENGTH
+
+    @property
+    def path(self):
+        return self._path
+
+    @path.setter
+    def path(self, value):
+        self._path = value
 
     def generate_maze(self):
         return [[Cell(row, col) for col in range(self.maze_cols)]
