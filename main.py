@@ -7,7 +7,7 @@ def main():
     model = Model()
     view = View(model.maze_rows, model.maze_cols, model.edge_length)
     controller = Controller(model, view)
-    
+
     controller.game_loop()
 
 
