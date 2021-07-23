@@ -9,5 +9,4 @@ The graphics component of the program is handled by the pygame graphics library.
  
 ## Algorithms used                                                                                                                                                                                                                            
 Maze generation algorithms: https://en.wikipedia.org/wiki/Maze_generation_algorithm                                   
-
 Recursive depth-first search: https://en.wikipedia.org/wiki/Depth-first_search
