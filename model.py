@@ -63,35 +63,29 @@ class Model:
         if cur_col > adj_col:
             adjacent_cell.walls["right"] = False
 
-    def iterative_dfs(self, starting_cell):
-        visited = []
-        stack = []
+    def carve_maze(self):
+        # Start carving the maze from the top left cell
+        self.carve_maze_util(self.maze[0][0])
 
-        visited.append(starting_cell)
-        stack.append(starting_cell)
+    def carve_maze_util(self, starting_cell):
+        visited = set()
+        stack = deque([starting_cell])
 
         while stack:
-            current_cell = stack.pop()
-
-            # Get all the adjacent cell to the current cell
-            adjacent_cells = self.get_adjacent_cells(current_cell)
+            cell = stack.pop()
+            visited.add(cell)
 
             # Filter out those adjacent cells, that are unvisited
-            unvisited_adj_cells = [
-                cell for cell in adjacent_cells if cell not in visited
-            ]
+            adj_unvisited = [adj_cell for adj_cell in self.get_adjacent_cells(cell)
+                             if adj_cell not in visited]
 
-            if unvisited_adj_cells:
-                stack.append(current_cell)
-
-                # Choose a random cell out of all the unvisited adjacent cells
-                cell = random.choice(unvisited_adj_cells)
-
-                # Remove walls between the current cell and the random unvisited adjacent cell
-                self.remove_walls(current_cell, cell)
-
-                visited.append(cell)
+            if adj_unvisited:
                 stack.append(cell)
+
+                adj_cell = random.choice(adj_unvisited)
+                self.remove_walls(cell, adj_cell)
+
+                stack.append(adj_cell)
 
     def check_walls(self, current_cell, adjacent_cell):
         row = current_cell.row
@@ -130,10 +124,6 @@ class Model:
                         stack.append(adj_cell)
 
         return False
-
-    def carve_maze(self):
-        # Start carving the maze from the top left cell
-        self.iterative_dfs(self.maze[0][0])
 
     def determine_path_to_end(self):
         start_cell = self.maze[0][0]
