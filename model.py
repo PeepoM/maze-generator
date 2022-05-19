@@ -1,5 +1,6 @@
 import random
 from cell import Cell
+from collections import deque
 
 
 class Model:
@@ -107,41 +108,37 @@ class Model:
 
         return False
 
-    def depth_first_search(self, current_cell, visited, path):
-        if current_cell in visited:
-            return False, path
-        if current_cell.row == self.maze_rows - 1 and current_cell.col == self.maze_cols - 1:
-            return True, path
+    def depth_first_search(self, start_cell, end_cell):
+        visited = set()
+        stack = deque([start_cell])
 
-        visited.append(current_cell)
+        while stack:
+            cell = stack.pop()
 
-        # Get all the available cells
-        adjacent_cells = self.get_adjacent_cells(current_cell)
+            if cell == end_cell:
+                return True
 
-        # Filter only the cells, to which we have access and no walls are blocking the way
-        viable_adj_cells = [
-            cell for cell in adjacent_cells
-            if self.check_walls(current_cell, cell)
-        ]
-
-        for cell in viable_adj_cells:
             if cell not in visited:
-                found_end, path = self.depth_first_search(cell, visited, path)
-                if found_end:
-                    path.append(cell)
-                    return True, path
+                visited.add(cell)
 
-        return False, path
+                viable_adj_cells = [adj_cell for adj_cell in self.get_adjacent_cells(cell)
+                                    if self.check_walls(cell, adj_cell)]
+
+                for adj_cell in viable_adj_cells:
+                    if adj_cell not in visited:
+                        adj_cell.parent = cell
+                        stack.append(adj_cell)
+
+        return False
 
     def carve_maze(self):
         # Start carving the maze from the top left cell
         self.iterative_dfs(self.maze[0][0])
 
     def determine_path_to_end(self):
-        found_end, path = self.depth_first_search(self.maze[0][0], [], [])
+        start_cell = self.maze[0][0]
+        end_cell = self.maze[-1][-1]
+        found_end = self.depth_first_search(start_cell, end_cell)
 
         if found_end:
-            path.append(self.maze[0][0])
-            path.reverse()
-
-        return path
+            return end_cell.reconstruct_path()
