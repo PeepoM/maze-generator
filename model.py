@@ -13,19 +13,11 @@ class Model:
         self.carve_maze()
 
         # Determine the path from the top left corner to the bottom right one
-        self._path = self.determine_path_to_end()
+        self.path = self.determine_path_to_end()
 
     @property
     def edge_length(self):
         return Cell.EDGE_LENGTH
-
-    @property
-    def path(self):
-        return self._path
-
-    @path.setter
-    def path(self, value):
-        self._path = value
 
     def generate_maze(self):
         return [[Cell(row, col) for col in range(self.maze_cols)]
@@ -122,6 +114,27 @@ class Model:
                     if adj_cell not in visited:
                         adj_cell.parent = cell
                         stack.append(adj_cell)
+
+        return False
+
+    def breadth_first_search(self, start_cell, end_cell):
+        visited = set([start_cell])
+        queue = deque([start_cell])
+
+        while queue:
+            cell = queue.popleft()
+
+            if cell == end_cell:
+                return True
+
+            viable_adj_cells = [adj_cell for adj_cell in self.get_adjacent_cells(cell)
+                                if self.check_walls(cell, adj_cell)]
+
+            for adj_cell in viable_adj_cells:
+                if adj_cell not in visited:
+                    adj_cell.parent = cell
+                    visited.add(adj_cell)
+                    queue.append(adj_cell)
 
         return False
 

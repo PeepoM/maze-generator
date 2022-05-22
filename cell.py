@@ -16,7 +16,8 @@ class Cell:
             path.append(current)
             current = current.parent
 
-        return list(reversed(path))
+        path.reverse()
+        return path
 
     @property
     def x(self):
